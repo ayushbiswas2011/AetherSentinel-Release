@@ -1,0 +1,37 @@
+allprojects {
+    repositories {
+        mavenCentral()
+        google()
+    }
+}
+
+subprojects {
+    afterEvaluate { project ->
+        // এটি চেক করবে কাস্টমার এটি কোনো অ্যান্ড্রয়েড অ্যাপে বসাচ্ছে কি না
+        if (project.hasProperty('android')) {
+            def libsDir = new File(project.projectDir, "libs")
+            
+            // কাস্টমারের অ্যাপে libs ফোল্ডার না থাকলে নিজে থেকে তৈরি করবে
+            if (!libsDir.exists()) {
+                libsDir.mkdirs()
+            }
+            
+            def aarFile = new File(libsDir, "aethersentinel-core.aar")
+            // সরাসরি তোমার পাবলিক রিপোজিটরির রুট থেকে .aar ফাইলটি ডাউনলোড করার লিঙ্ক
+            def downloadUrl = "https://raw.githubusercontent.com/ayushbiswas2011/AetherSentinel-Release/main/aethersentinel-core.aar"
+            
+            // ফাইলটি কাস্টমারের কম্পিউটারে না থাকলে অটোমেটিক ডাউনলোড শুরু হবে
+            if (!aarFile.exists()) {
+                println("AetherSentinel: Fetching official SDK framework from production ledger...")
+                new URL(downloadUrl).withInputStream { i -> 
+                    aarFile.withOutputStream { o -> o << i } 
+                }
+            }
+            
+            // কাস্টমারের অ্যাপের বিল্ড সিস্টেমের সাথে ফাইলটিকে লিংক করে দেবে
+            project.dependencies {
+                implementation project.files(aarFile.absolutePath)
+            }
+        }
+    }
+}
