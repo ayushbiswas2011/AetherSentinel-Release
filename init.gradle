@@ -11,26 +11,34 @@ subprojects {
         if (project.hasProperty('android')) {
             def libsDir = new File(project.projectDir, "libs")
             
-            // কাস্টমারের অ্যাপে libs ফোল্ডার না থাকলে নিজে থেকে তৈরি করবে
+            // কাস্টমারের অ্যাপে libs ফোল্ডার না থাকলে স্বয়ংক্রিয়ভাবে তৈরি করবে
             if (!libsDir.exists()) {
                 libsDir.mkdirs()
             }
             
-            // নতুন ব্র্যান্ড নেম অনুযায়ী .aar ফাইলের নাম পরিবর্তন করা হলো
+            // একদম নতুন ব্র্যান্ড নেম 'OkAether' ব্যবহার করা হয়েছে
             def aarFile = new File(libsDir, "okaether-core.aar")
             
-            // সরাসরি তোমার পাবলিক রিপোজিটরির রুট থেকে নতুন নামের .aar ফাইলটি ডাউনলোড করার লিঙ্ক
-            def downloadUrl = "https://raw.githubusercontent.com/ayushbiswas2011/AetherSentinel-Release/main/okaether-core.aar"
+            // সরাসরি তোমার পাবলিক রিলিজ রিপোজিটরির রুট থেকে .aar ফাইলটি ডাউনলোড করার নিখুঁত লিঙ্ক
+            def downloadUrl = "https://raw.githubusercontent.com/ayushbiswas2011/OkAether-Release/main/okaether-core.aar"
             
-            // ফাইলটি কাস্টমারের কম্পিউটারে না থাকলে অটোমেটিক ডাউনলোড শুরু হবে
+            // ফাইলটি কাস্টমারের কম্পিউটারে না থাকলে সেফ-মোডে ডাউনলোড শুরু হবে
             if (!aarFile.exists()) {
-                println("OkAether: Fetching official SDK framework from production ledger...")
-                new URL(downloadUrl).withInputStream { i -> 
-                    aarFile.withOutputStream { o -> o << i } 
+                println("🚀 OkAether Engine: Fetching official SDK framework from production ledger...")
+                try {
+                    new URL(downloadUrl).withInputStream { i -> 
+                        aarFile.withOutputStream { o -> o << i } 
+                    }
+                    println("✅ OkAether SDK installed successfully!")
+                } catch (Exception e) {
+                    println("❌ OkAether Engine Error: Failed to download SDK. Please check your internet connection.")
+                    e.printStackTrace()
                 }
+            } else {
+                println("⚡ OkAether Engine: SDK is already installed and up-to-date.")
             }
             
-            // কাস্টমারের অ্যাপের বিল্ড সিস্টেমের সাথে ফাইলটিকে লিংক করে দেবে (টাইপো এরর মুক্ত)
+            // কাস্টমারের অ্যাপের বিল্ড সিস্টেমের সাথে ফাইলটিকে জাদুকরীভাবে লিংক করে দেবে
             project.dependencies {
                 implementation project.files(aarFile.absolutePath)
             }
