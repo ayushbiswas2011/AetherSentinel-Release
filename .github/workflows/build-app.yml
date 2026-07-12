@@ -43,12 +43,12 @@ jobs:
 
       - name: Build Android App
         run: |
-          # একদম সঠিক ফোল্ডারটি খুঁজে বের করার জন্য লজিক
           echo "🔍 Searching for project root..."
-          GRADLE_FILE=$(find . -name "settings.gradle" | head -n 1)
+          # build.gradle অথবা settings.gradle যেটাই আগে পাবে সেটাকেই রুট ধরে নেবে
+          GRADLE_FILE=$(find . -name "build.gradle*" -o -name "settings.gradle*" | head -n 1)
           
           if [ -z "$GRADLE_FILE" ]; then
-            echo "❌ Error: Could not find settings.gradle file. Stopping build."
+            echo "❌ Error: Could not find build files. Stopping build."
             exit 1
           fi
           
@@ -86,6 +86,7 @@ jobs:
           EOF
           
           echo "🚀 Starting Gradle build..."
+          gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug
 
