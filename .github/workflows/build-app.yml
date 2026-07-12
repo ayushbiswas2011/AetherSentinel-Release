@@ -46,6 +46,35 @@ jobs:
           PROJECT_DIR=$(dirname $(find . -name "settings.gradle*" | head -n 1))
           echo "✅ Project found inside: $PROJECT_DIR"
           cd "$PROJECT_DIR"
+          
+          echo "🛠️ Auto-generating a clean AndroidManifest.xml..."
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+              <application
+                  android:name=".OkAetherApp"
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="OkAether Showcase"
+                  android:roundIcon="@mipmap/ic_launcher_round"
+                  android:supportsRtl="true"
+                  android:theme="@style/Theme.OkAetherShowcase">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:theme="@style/Theme.OkAetherShowcase"
+                      android:configChanges="orientation|screenSize|keyboardHidden">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+          
           gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug
